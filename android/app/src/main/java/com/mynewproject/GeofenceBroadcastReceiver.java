@@ -66,3 +66,60 @@
 //         }
 //     }
 // }
+
+
+
+package com.mynewproject;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingEvent;
+import java.util.List;
+
+public class GeofenceBroadcastReceiver extends BroadcastReceiver {
+
+    private static final String TAG = "GeofenceReceiver";
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        // GeofencingEvent를 가져옵니다.
+        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+        
+        if (geofencingEvent.hasError()) {
+            String errorMessage = String.valueOf(geofencingEvent.getErrorCode());
+            Log.e(TAG, "Geofencing error: " + errorMessage);
+            return;
+        }
+
+        // 지오펜싱 트리거 타입 확인 (ENTER, EXIT 등)
+        int geofenceTransition = geofencingEvent.getGeofenceTransition();
+
+        // 지오펜싱이 ENTER 또는 EXIT일 경우에만 처리
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
+            geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+
+            // 트리거된 지오펜스들 가져오기
+            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+
+            // 각 지오펜스에 대해 처리
+            for (Geofence geofence : triggeringGeofences) {
+                String requestId = geofence.getRequestId();
+
+                // 진입인지 이탈인지 확인 후 메시지 출력
+                if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+                    Toast.makeText(context, "지오펜스 진입: " + requestId, Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "지오펜스 진입: " + requestId);
+                } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+                    Toast.makeText(context, "지오펜스 이탈: " + requestId, Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "지오펜스 이탈: " + requestId);
+                }
+            }
+        } else {
+            Log.e(TAG, "잘못된 지오펜스 트리거");
+        }
+    }
+}
