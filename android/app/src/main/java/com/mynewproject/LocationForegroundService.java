@@ -1,3 +1,4 @@
+// json 전송
 package com.mynewproject;
 
 import android.app.Notification;
@@ -15,16 +16,22 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.facebook.react.ReactApplication;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.facebook.react.modules.core.DeviceEventManagerModule; // 추가된 import
+import com.facebook.react.bridge.ReactContext;
+
 
 public class LocationForegroundService extends Service {
 
     private static final int NOTIFICATION_ID = 1;
     private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
+    private ReactContext reactContext;
 
     @Override
     public void onCreate() {
@@ -61,16 +68,26 @@ public class LocationForegroundService extends Service {
 
     private void startLocationUpdates() {
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000); // 10초 간격
+        locationRequest.setInterval(3000); // 3초 간격
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 사용
 
-        LocationCallback locationCallback = new LocationCallback() {
+        locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult != null) {
                     for (Location location : locationResult.getLocations()) {
                         Log.d("LocationUpdate", "위치 업데이트: " + location.getLatitude() + ", " + location.getLongitude());
-                        Toast.makeText(LocationForegroundService.this, "현재 위치: " + location.getLatitude() + ", " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(LocationForegroundService.this, "현재 위치: " + location.getLatitude() + ", " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                        
+                       // 위치 데이터를 JSON 객체로 변환하여 React Native로 전송
+                        String json = "{\"latitude\": " + location.getLatitude() +
+                                    ", \"longitude\": " + location.getLongitude() +
+                                    ", \"altitude\": " + location.getAltitude() +
+                                    ", \"accuracy\": " + location.getAccuracy() +
+                                    ", \"speed\": " + location.getSpeed() +
+                                    ", \"bearing\": " + location.getBearing() +
+                                    ", \"time\": " + location.getTime() + "}";
+                        sendLocationToReactNative(json); // 여기서 JSON 문자열을 전송
                     }
                 } else {
                     Log.e("LocationUpdate", "현재 위치를 찾을 수 없습니다.");
@@ -80,6 +97,26 @@ public class LocationForegroundService extends Service {
 
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
+
+    private void sendLocationToReactNative(String json) {
+        // ReactApplication context 가져오기
+        ReactApplication context = (ReactApplication) getApplicationContext();
+        // React Native의 EventEmitter를 통해 전송
+        context.getReactNativeHost().getReactInstanceManager()
+            .getCurrentReactContext()
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit("LocationUpdate", json);
+    }
+
+    // @Override
+    // public void onTaskRemoved(Intent rootIntent) {
+    //     super.onTaskRemoved(rootIntent);
+    //     // 태스크가 제거될 때 호출되는 코드
+    //     Log.d("LocationService", "위치 업데이트가 중지되었습니다.");
+
+    //     // 자원 정리 코드 (예: 데이터 저장, 스레드 종료 등)
+    //     stopSelf(); // 서비스 종료
+    // }
 
     @Nullable
     @Override

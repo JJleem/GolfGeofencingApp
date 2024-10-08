@@ -82,7 +82,6 @@ import java.util.List;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "GeofenceReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -91,7 +90,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         
         if (geofencingEvent.hasError()) {
             String errorMessage = String.valueOf(geofencingEvent.getErrorCode());
-            Log.e(TAG, "Geofencing error: " + errorMessage);
+            Log.e("Geofencing", "Geofencing error: " + errorMessage);
             return;
         }
 
@@ -112,14 +111,14 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
                 // 진입인지 이탈인지 확인 후 메시지 출력
                 if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
                     Toast.makeText(context, "지오펜스 진입: " + requestId, Toast.LENGTH_LONG).show();
-                    Log.i(TAG, "지오펜스 진입: " + requestId);
+                    Log.i("Geofencing", "지오펜스 진입: " + requestId);
                 } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
                     Toast.makeText(context, "지오펜스 이탈: " + requestId, Toast.LENGTH_LONG).show();
-                    Log.i(TAG, "지오펜스 이탈: " + requestId);
+                    Log.i("Geofencing", "지오펜스 이탈: " + requestId);
                 }
             }
         } else {
-            Log.e(TAG, "잘못된 지오펜스 트리거");
+            Log.e("Geofencing", "잘못된 지오펜스 트리거");
         }
     }
 }
