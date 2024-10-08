@@ -8,11 +8,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import android.app.AlertDialog; // AlertDialog 클래스 추가
+import android.content.Intent; // Intent 클래스 추가
+import android.net.Uri; // Uri 클래스 추가
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
@@ -55,6 +58,10 @@ public class MainActivity extends ReactActivity {
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION
             }, LOCATION_PERMISSION_REQUEST_CODE);
+            // 권한 설정 화면으로 이동
+            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
         } else {
             startForegroundService(); // 권한이 허용된 경우 포그라운드 서비스 시작
             addGeofences(); // 권한이 허용된 경우 지오펜스 추가
@@ -68,14 +75,12 @@ public class MainActivity extends ReactActivity {
     }
 
     private void addTestGeofence() {
-        Log.d("Geofence", "Adding test geofence");
         geofenceList.add(new Geofence.Builder()
-                .setRequestId("SeoulCityHall")
-                .setCircularRegion(37.5665, 126.9780, 100) // 서울시청의 위도와 경도, 반경 100m
+                .setRequestId("GuroLocation")
+                .setCircularRegion(37.4865059, 126.8934746, 1000) // 현재 위치에 맞게 설정
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                 .build());
-                Log.d("GeofencingError", "Geofence added: " + geofenceList.size());
     }
 
     private GeofencingRequest getGeofencingRequest() {
@@ -85,9 +90,25 @@ public class MainActivity extends ReactActivity {
         return builder.build();
     }
 
-    private PendingIntent getGeofencePendingIntent() {
+    // private PendingIntent getGeofencePendingIntent() {
+    //     Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
+    //     return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    // }
+        private PendingIntent getGeofencePendingIntent() {
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
-        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        
+        // 로그 추가
+        Log.d("GeofencePendingIntent", "Creating PendingIntent");
+        
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        
+        if (pendingIntent != null) {
+            Log.d("GeofencePendingIntent", "PendingIntent created successfully");
+        } else {
+            Log.e("GeofencePendingIntent", "Failed to create PendingIntent");
+        }
+        
+        return pendingIntent;
     }
 
         private void addGeofences() {
@@ -98,6 +119,11 @@ public class MainActivity extends ReactActivity {
             geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
                 .addOnSuccessListener(this, aVoid -> {
                     Toast.makeText(MainActivity.this, "지오펜싱 추가 성공", Toast.LENGTH_SHORT).show();
+                    Log.d("GeofencingSize", "Geofence added: " + geofenceList.size());
+                                    for (Geofence geofence : geofenceList) {
+                    Log.d("GeofencingSize", "Geofence ID: " + geofence.getRequestId());
+                    
+                }
                 })
                 .addOnFailureListener(this, e -> {
                     String errorMessage = "지오펜싱 추가 실패: " + e.getMessage();
@@ -120,8 +146,25 @@ public class MainActivity extends ReactActivity {
                 startForegroundService(); // 권한이 허용되면 서비스 시작
                 addGeofences(); // 지오펜스 추가
             } else {
-                Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+                showPermissionDeniedDialog();
             }
         }
     }
+
+        // 권한 거부 시 팝업창 보여주는 메서드
+    private void showPermissionDeniedDialog() {
+        new AlertDialog.Builder(this)
+            .setTitle("위치 권한 필요")
+            .setMessage("위치 권한이 필요합니다. 앱 설정으로 이동하여 권한을 허용해 주세요.")
+            .setPositiveButton("설정으로 이동", (dialog, which) -> {
+                // 권한 설정 화면으로 이동
+                Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            })
+            .setNegativeButton("취소", (dialog, which) -> dialog.dismiss())
+            .create()
+            .show();
+    }
 }
+

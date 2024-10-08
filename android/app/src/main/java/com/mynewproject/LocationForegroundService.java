@@ -108,6 +108,8 @@ public class LocationForegroundService extends Service {
             .emit("LocationUpdate", json);
     }
 
+    
+
     // @Override
     // public void onTaskRemoved(Intent rootIntent) {
     //     super.onTaskRemoved(rootIntent);

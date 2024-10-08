@@ -35,9 +35,9 @@
             android:name=".GeofenceBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.location.Geofence" />
-            </intent-filter>
+        <intent-filter>
+            <action android:name="com.google.android.gms.location.GeofencingEvent" />
+        </intent-filter>
         </receiver>
 
         <!-- 포그라운드 서비스 선언 -->
