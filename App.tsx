@@ -1,3 +1,4 @@
+import {NavigationContainer} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -5,8 +6,9 @@ import {
   NativeEventEmitter,
   NativeModules,
   ScrollView,
+  StyleSheet,
 } from 'react-native';
-
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 // 위치 정보 타입 정의
 interface LocationData {
   latitude: number;
@@ -18,6 +20,36 @@ interface LocationData {
   provider: string;
   time: number; // timestamp가 숫자형
 }
+import {NativeRouter, Route, Link, Routes} from 'react-router-native';
+function HomeScreen() {
+  return (
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Text>Home Screen</Text>
+    </View>
+  );
+}
+
+const Home: React.FC = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>홈 화면</Text>
+      <Link to="/details">
+        <Text>상세 화면으로 이동</Text>
+      </Link>
+    </View>
+  );
+};
+
+const Details: React.FC = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>상세 화면</Text>
+      <Link to="/">
+        <Text>홈으로 돌아가기</Text>
+      </Link>
+    </View>
+  );
+};
 
 const App: React.FC = () => {
   const [locationInfo, setLocationInfo] = useState<string>(
@@ -72,16 +104,34 @@ const App: React.FC = () => {
     };
   }, []);
 
+  const Stack = createNativeStackNavigator();
+
   return (
-    <ScrollView
-      contentContainerStyle={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
+    <NativeRouter>
       <Text>{locationInfo}</Text>
-    </ScrollView>
+      <View style={styles.container}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/details" element={<Details />} />
+        </Routes>
+      </View>
+    </NativeRouter>
   );
 };
 
 export default App;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  link: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+});
