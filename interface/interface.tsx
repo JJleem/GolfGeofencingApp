@@ -30,7 +30,9 @@ export interface LocationInfo {
   speed: number;
   bearing: number;
   provider: string;
-  time: string; // timestamp가 숫자형
+  time: string;
+  requestId: string;
+  isCheck: boolean; // timestamp가 숫자형
 }
 export interface LocationData {
   latitude: number;
@@ -41,6 +43,8 @@ export interface LocationData {
   bearing: number;
   provider: string;
   time: number; // timestamp가 숫자형
+  requestId: string;
+  isCheck: boolean;
 }
 export interface ReservationInfo {
   date: string;

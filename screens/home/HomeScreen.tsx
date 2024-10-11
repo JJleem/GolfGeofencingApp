@@ -43,6 +43,8 @@ const HomeScreen: React.FC = () => {
             bearing,
             provider,
             time,
+            requestId,
+            isCheck,
           } = parsedData;
 
           const formattedTime = new Date(Number(time)).toLocaleString();
@@ -57,6 +59,8 @@ const HomeScreen: React.FC = () => {
             bearing,
             provider: provider || '정보 없음',
             time: formattedTime,
+            requestId,
+            isCheck,
           });
           console.log(locationInfo);
         } catch (error) {

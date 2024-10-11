@@ -1,6 +1,5 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 
 react {
@@ -53,11 +52,13 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+    // Google Play Services Location 라이브러리 항상 포함
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
-        implementation ("com.google.android.gms:play-services-location:21.0.1")
-        implementation("com.facebook.react:react-native:0.75.4")
     } else {
         implementation jscFlavor
     }
+    implementation("com.facebook.react:react-native:0.75.4")
 }

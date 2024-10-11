@@ -33,6 +33,9 @@ public class LocationForegroundService extends Service {
     private LocationCallback locationCallback;
     private ReactContext reactContext;
 
+    private boolean isCheck;
+    private String requestId;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -66,6 +69,25 @@ public class LocationForegroundService extends Service {
                 .build();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            // isCheck 값 업데이트
+            if (intent.hasExtra("isCheck")) {
+                boolean checkValue = intent.getBooleanExtra("isCheck", false);
+                updateIsCheck(checkValue); // isCheck 값 업데이트
+                Log.d("LocationForegroundService", "isCheck 값 업데이트: " + checkValue);
+            }
+
+            // requestId 값 업데이트
+            if (intent.hasExtra("requestId")) {
+                requestId = intent.getStringExtra("requestId");
+                Log.d("LocationForegroundService", "requestId 값 업데이트: " + requestId);
+            }
+        }
+        return START_STICKY;
+    }
+
     private void startLocationUpdates() {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setInterval(3000); // 3초 간격
@@ -86,7 +108,9 @@ public class LocationForegroundService extends Service {
                                     ", \"accuracy\": " + location.getAccuracy() +
                                     ", \"speed\": " + location.getSpeed() +
                                     ", \"bearing\": " + location.getBearing() +
-                                    ", \"time\": " + location.getTime() + "}";
+                                    ", \"time\": " + location.getTime() + 
+                                    ", \"isCheck\": " + isCheck + 
+                                    ", \"requestId\": \"" + requestId + "\"}";
                         sendLocationToReactNative(json); // 여기서 JSON 문자열을 전송
                     }
                 } else {
@@ -99,15 +123,22 @@ public class LocationForegroundService extends Service {
     }
 
     private void sendLocationToReactNative(String json) {
-        // ReactApplication context 가져오기
         ReactApplication context = (ReactApplication) getApplicationContext();
-        // React Native의 EventEmitter를 통해 전송
-        context.getReactNativeHost().getReactInstanceManager()
-            .getCurrentReactContext()
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit("LocationUpdate", json);
+        // React Native의 현재 ReactContext를 가져옵니다.
+        ReactContext reactContext = context.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
+        
+        if (reactContext != null) {
+            // React Native의 EventEmitter를 통해 전송
+            reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                        .emit("LocationUpdate", json);
+        } else {
+            Log.e("LocationForegroundService", "React Native context가 null입니다. 위치 데이터를 전송할 수 없습니다.");
+        }
     }
 
+    public void updateIsCheck(boolean value) {
+        this.isCheck = value; // isCheck 값 업데이트
+    }
     
 
     // @Override

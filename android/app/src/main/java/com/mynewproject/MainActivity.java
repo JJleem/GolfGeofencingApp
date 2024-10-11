@@ -8,14 +8,11 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import android.app.AlertDialog; // AlertDialog 클래스 추가
-import android.content.Intent; // Intent 클래스 추가
-import android.net.Uri; // Uri 클래스 추가
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
@@ -26,10 +23,14 @@ import com.facebook.react.ReactActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
 public class MainActivity extends ReactActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1; // 위치 권한 요청 코드
     private GeofencingClient geofencingClient; // 지오펜싱 클라이언트
     private List<Geofence> geofenceList; // 지오펜스 리스트
+    private static final int PERMISSION_REQUEST_CODE = 100; // 권한 요청 코드 추가
 
 
     @Override
@@ -40,15 +41,28 @@ public class MainActivity extends ReactActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Google Play Services 가용성 확인
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
         
-        // 초기화
-        geofencingClient = LocationServices.getGeofencingClient(this);
-        geofenceList = new ArrayList<>();
+        if (resultCode == ConnectionResult.SUCCESS) {
+            Log.d("Geofencing", "Google Play Services is available.");
+            
+            // 초기화
+            geofencingClient = LocationServices.getGeofencingClient(this);
+            geofenceList = new ArrayList<>();
 
-        // 테스트용 지오펜싱 영역 추가
-        addTestGeofence();
+            // 테스트용 지오펜싱 영역 추가
+            addTestGeofence();
 
-        requestLocationPermission(); // 위치 권한 요청
+            requestLocationPermission(); // 위치 권한 요청
+        } else {
+            Log.e("Geofencing", "Google Play Services not supported or available");
+            Toast.makeText(this, "Google Play Services가 필요합니다.", Toast.LENGTH_SHORT).show();
+            // 필요한 경우 앱 종료 또는 다른 처리
+            return; // Google Play Services가 사용할 수 없는 경우, 나머지 로직을 실행하지 않음
+        }
     }
 
         private void requestLocationPermission() {
@@ -58,10 +72,6 @@ public class MainActivity extends ReactActivity {
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION
             }, LOCATION_PERMISSION_REQUEST_CODE);
-            // 권한 설정 화면으로 이동
-            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            intent.setData(Uri.parse("package:" + getPackageName()));
-            startActivity(intent);
         } else {
             startForegroundService(); // 권한이 허용된 경우 포그라운드 서비스 시작
             addGeofences(); // 권한이 허용된 경우 지오펜스 추가
@@ -75,12 +85,22 @@ public class MainActivity extends ReactActivity {
     }
 
     private void addTestGeofence() {
+        Log.d("Geofence", "Adding test geofence");
         geofenceList.add(new Geofence.Builder()
-                .setRequestId("GuroLocation")
-                .setCircularRegion(37.4865059, 126.8934746, 1000) // 현재 위치에 맞게 설정
+                .setRequestId("Guro")
+                .setCircularRegion(37.4864996, 126.8934724, 1000) 
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                 .build());
+        
+        geofenceList.add(new Geofence.Builder()
+        .setRequestId("lotte") // 새로운 지오펜스의 고유 ID
+        .setCircularRegion(37.512464099999995, 127.10254300000001, 1000) // 고정된 위치로 설정
+        .setExpirationDuration(Geofence.NEVER_EXPIRE) // 만료되지 않도록 설정
+        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT) // 진입 및 이탈 이벤트
+        .build());
+
+        Log.d("GeofencingAdd", "New geofence added: " + geofenceList.size());
     }
 
     private GeofencingRequest getGeofencingRequest() {
@@ -90,52 +110,33 @@ public class MainActivity extends ReactActivity {
         return builder.build();
     }
 
-    // private PendingIntent getGeofencePendingIntent() {
-    //     Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
-    //     return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-    // }
+
         private PendingIntent getGeofencePendingIntent() {
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
-        
-        // 로그 추가
-        Log.d("GeofencePendingIntent", "Creating PendingIntent");
-        
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        
-        if (pendingIntent != null) {
-            Log.d("GeofencePendingIntent", "PendingIntent created successfully");
-        } else {
-            Log.e("GeofencePendingIntent", "Failed to create PendingIntent");
-        }
-        
-        return pendingIntent;
+        intent.setAction("com.google.android.gms.location.Geofence"); // 액션을 맞춰주기
+
+        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+
+
         private void addGeofences() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION}, PERMISSION_REQUEST_CODE);
+        } else {
             Log.d("Geofencing", "Adding geofences with permissions granted");
             geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
                 .addOnSuccessListener(this, aVoid -> {
                     Toast.makeText(MainActivity.this, "지오펜싱 추가 성공", Toast.LENGTH_SHORT).show();
-                    Log.d("GeofencingSize", "Geofence added: " + geofenceList.size());
-                                    for (Geofence geofence : geofenceList) {
-                    Log.d("GeofencingSize", "Geofence ID: " + geofence.getRequestId());
-                    
-                }
                 })
                 .addOnFailureListener(this, e -> {
                     String errorMessage = "지오펜싱 추가 실패: " + e.getMessage();
                     Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                     Log.e("GeofencingError", errorMessage);
                 });
-        } else {
-            Log.e("GeofencingError", "Permission not granted for adding geofences");
         }
     }
-
-
 
 
     @Override
@@ -146,25 +147,8 @@ public class MainActivity extends ReactActivity {
                 startForegroundService(); // 권한이 허용되면 서비스 시작
                 addGeofences(); // 지오펜스 추가
             } else {
-                showPermissionDeniedDialog();
+                Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
-        // 권한 거부 시 팝업창 보여주는 메서드
-    private void showPermissionDeniedDialog() {
-        new AlertDialog.Builder(this)
-            .setTitle("위치 권한 필요")
-            .setMessage("위치 권한이 필요합니다. 앱 설정으로 이동하여 권한을 허용해 주세요.")
-            .setPositiveButton("설정으로 이동", (dialog, which) -> {
-                // 권한 설정 화면으로 이동
-                Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivity(intent);
-            })
-            .setNegativeButton("취소", (dialog, which) -> dialog.dismiss())
-            .create()
-            .show();
-    }
 }
-

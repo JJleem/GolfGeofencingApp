@@ -78,7 +78,6 @@ const Reservation = () => {
                   0 인
                 </Text>
               </MemberView>
-
               <TouchableOpacity
                 style={{
                   flexDirection: 'row',
