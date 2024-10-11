@@ -100,6 +100,7 @@ const MainView = styled(View)`
   gap: 27px;
   justify-content: center;
   align-items: center;
+  padding-bottom: 250px;
 `;
 const HeaderView = styled(View)`
   flex-direction: row;

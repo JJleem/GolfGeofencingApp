@@ -78,7 +78,7 @@ const HomeScreen: React.FC = () => {
   /////////////////////////
 
   return (
-    <MainView>
+    <MainView nestedScrollEnabled={true}>
       <TopSection>
         <MockupImg />
         <Text style={{fontWeight: 'bold', fontSize: 20}}>

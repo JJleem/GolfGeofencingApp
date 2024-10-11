@@ -30,8 +30,6 @@ const ScheduleBox = () => {
     setIsCheck(mockupdata.reservationInformation.isCheck);
   }, [setReservationInfo]);
 
-  console.log('목업데이터 ', reservationInfo);
-
   const navigate = useNavigate();
   const goDetails = () => {
     navigate('/details');

@@ -1,8 +1,10 @@
 import React, {useRef, useState} from 'react';
 import {
   Animated,
+  Modal,
   PanResponder,
   Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -13,6 +15,10 @@ import styled from 'styled-components/native';
 import {Text} from '../../theme/theme';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigate} from 'react-router-native';
+import HomeCalendar from './HomeCalendar';
+import {useRecoilState} from 'recoil';
+import {DateSelected, ModalCalendar} from '../../atom/atom';
+import DateSlider from '../../facilities/Facilities';
 const ReservationBox = () => {
   const navigate = useNavigate();
   const [numbers, setNumbers] = useState([
@@ -62,7 +68,9 @@ const ReservationBox = () => {
     }),
   ).current;
 
-  const [isClick, setIsClick] = useState(false);
+  const [isClick, setIsClick] = useRecoilState(ModalCalendar);
+  const [selectedDate, setSelectedDate] = useRecoilState(DateSelected);
+  console.log(selectedDate);
   return (
     <MiddleSection style={{paddingBottom: 100}}>
       <Text style={{fontWeight: 'bold', fontSize: 16}}>라운딩 예약하기</Text>
@@ -83,7 +91,9 @@ const ReservationBox = () => {
               gap: 9,
               alignItems: 'center',
             }}>
-            <Text style={{fontWeight: 'bold', fontSize: 16}}>2024년 8월</Text>
+            <Text style={{fontWeight: 'bold', fontSize: 16}}>
+              {selectedDate}
+            </Text>
             <TouchableWithoutFeedback
               style={{
                 justifyContent: 'center',
@@ -98,18 +108,7 @@ const ReservationBox = () => {
             </TouchableWithoutFeedback>
           </View>
           <SliderContainer>
-            <Animated.View
-              style={{
-                flexDirection: 'row',
-                transform: [{translateX: offset}], // 드래그한 위치에서 멈춤
-              }}
-              {...panResponder.panHandlers}>
-              {numbers.map(number => (
-                <View key={number} style={styles.numberContainer}>
-                  <Text style={styles.numberText}>{number}</Text>
-                </View>
-              ))}
-            </Animated.View>
+            <DateSlider />
           </SliderContainer>
           <ReservationBTN
             activeOpacity={0.1}
@@ -119,12 +118,55 @@ const ReservationBox = () => {
             </Text>
           </ReservationBTN>
         </MiddleSectionInner>
+        <Modal
+          transparent={true}
+          visible={isClick}
+          animationType="slide"
+          onRequestClose={() => {
+            setIsClick(false);
+          }}>
+          <ModalCenterView onPress={() => setIsClick(false)}>
+            <ModalView
+              onTouchStart={e => {
+                e.stopPropagation(); // 모달 내부 클릭 시 이벤트 전파 방지
+              }}
+              style={{
+                zIndex: 2,
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5,
+              }}>
+              <HomeCalendar />
+            </ModalView>
+          </ModalCenterView>
+        </Modal>
       </MiddleSectionContainer>
     </MiddleSection>
   );
 };
 
 export default ReservationBox;
+
+const ModalCenterView = styled(Pressable)`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  z-index: -1;
+  background-color: transparent;
+`;
+const ModalView = styled(View)`
+  background-color: #fff;
+  border-radius: 20px;
+  width: 80%;
+  height: 50%;
+  justify-content: center;
+  align-items: center;
+`;
 
 const MiddleSectionContainer = styled(View)`
   position: relative;
@@ -158,27 +200,4 @@ const ReservationBTN = styled(TouchableOpacity)`
   padding: 15px;
 `;
 
-const SliderContainer = styled(View)`
-  flex: 1;
-  overflow: hidden;
-`;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  numberContainer: {
-    width: 50,
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#000',
-    margin: 5,
-  },
-  numberText: {
-    fontSize: 20,
-  },
-});
+const SliderContainer = styled(View)``;
