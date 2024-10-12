@@ -18,7 +18,8 @@ import {useNavigate} from 'react-router-native';
 import HomeCalendar from './HomeCalendar';
 import {useRecoilState} from 'recoil';
 import {DateSelected, ModalCalendar} from '../../atom/atom';
-import DateSlider from '../../facilities/Facilities';
+import HomeSlider from '../sliderComponent/HomeSlider';
+
 const ReservationBox = () => {
   const navigate = useNavigate();
   const [numbers, setNumbers] = useState([
@@ -108,7 +109,7 @@ const ReservationBox = () => {
             </TouchableWithoutFeedback>
           </View>
           <SliderContainer>
-            <DateSlider />
+            <HomeSlider />
           </SliderContainer>
           <ReservationBTN
             activeOpacity={0.1}
