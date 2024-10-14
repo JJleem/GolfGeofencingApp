@@ -13,7 +13,10 @@ interface ICarousel {
 const Container = styled.View`
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 45px;
 `;
+const FlatListStyle = styled(FlatList)``;
 
 export default function Carousel({pages, pageWidth, gap, offset}: ICarousel) {
   const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 상태
@@ -34,7 +37,7 @@ export default function Carousel({pages, pageWidth, gap, offset}: ICarousel) {
 
   return (
     <Container>
-      <FlatList
+      <FlatListStyle
         automaticallyAdjustContentInsets={false}
         contentContainerStyle={{
           paddingHorizontal: offset + gap / 2,

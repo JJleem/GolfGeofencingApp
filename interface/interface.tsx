@@ -47,8 +47,31 @@ export interface LocationData {
   isCheck: boolean;
 }
 export interface ReservationInfo {
-  date: string;
-  course: string;
-  locker: string;
+  reservationNum?: number;
+  date?: string;
+  course_info?: string[];
+  locker_info?: number;
+  isCheck?: boolean;
+  requestId?: string;
+  tee_info?: string[];
+}
+
+export interface UserInfo {
+  userNum?: number;
+  id?: string;
+  pwd?: string;
+  name?: string;
+  birthdate?: string;
+  phone?: string;
+  gender?: string;
+}
+
+export interface UserReservationType {
+  requestId?: string;
+  reservationNum?: number;
+  date?: string;
+  course_info?: string;
+  tee_info?: string;
+  memberNum?: number;
   isCheck?: boolean;
 }

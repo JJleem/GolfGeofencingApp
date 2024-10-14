@@ -11,8 +11,9 @@ import styled from 'styled-components/native';
 import {Text} from '../../theme/theme';
 import {useNavigate} from 'react-router-native';
 import {useRecoilState} from 'recoil';
-import {reservationInfoState} from '../../atom/atom';
+import {reservationInfoState, userReservation} from '../../atom/atom';
 import mockupdata from '../../mock/mockupdata.json';
+import {ReservationBTN} from '../../screens/reservation/Reservation';
 
 type isCheck = {
   isCheck?: boolean;
@@ -21,7 +22,9 @@ type isCheck = {
 const ScheduleBox = () => {
   const [reservationInfo, setReservationInfo] =
     useRecoilState(reservationInfoState);
+  const [reservationData, setReservationData] = useRecoilState(userReservation);
 
+  console.log(reservationData);
   const [isCheck, setIsCheck] = useState(
     mockupdata.reservationInformation.isCheck,
   );
@@ -50,80 +53,97 @@ const ScheduleBox = () => {
             zIndex: 3,
           }}
           onPress={() => navigate('/details')}>
-          <InnerContainer>
-            <MiddleSectionItem>
-              <Text style={{fontWeight: 'bold', fontSize: 14, paddingTop: 4}}>
-                예약 일자
-              </Text>
-              <MiddleText
-                style={{
-                  fontWeight: 'medium',
-                  fontSize: 14,
-                  paddingTop: 4,
-                }}>
-                {reservationInfo?.date}
-              </MiddleText>
-              <CheckIn isCheck={isCheck}>
-                <CheckText
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 14,
-                  }}
-                  isCheck={isCheck}>
-                  {isCheck ? '체크인' : '체크인 전'}
-                </CheckText>
-              </CheckIn>
-            </MiddleSectionItem>
-            <View style={{gap: 0}}>
+          {reservationData?.course_info &&
+          reservationData?.memberNum &&
+          reservationData?.date ? (
+            <InnerContainer>
               <MiddleSectionItem>
                 <Text style={{fontWeight: 'bold', fontSize: 14, paddingTop: 4}}>
-                  코스 정보
-                </Text>
-                <MiddleText
-                  style={{fontWeight: 'medium', fontSize: 14, paddingTop: 4}}>
-                  {reservationInfo?.course}
-                </MiddleText>
-                <CheckIn style={{opacity: 0}}>
-                  <CheckText
-                    style={{
-                      fontWeight: 'medium',
-                      fontSize: 14,
-                      color: '#c7c7c7',
-                    }}>
-                    내용없음
-                  </CheckText>
-                </CheckIn>
-              </MiddleSectionItem>
-              <MiddleSectionItem>
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 14,
-                    paddingTop: 0,
-                  }}>
-                  락커 정보
+                  예약 일자
                 </Text>
                 <MiddleText
                   style={{
                     fontWeight: 'medium',
                     fontSize: 14,
-                    paddingTop: 0,
+                    paddingTop: 4,
                   }}>
-                  {reservationInfo?.locker}
+                  {reservationData?.date}
                 </MiddleText>
-                <CheckIn style={{opacity: 0}}>
+                <CheckIn isCheck={reservationData?.isCheck}>
                   <CheckText
                     style={{
                       fontWeight: 'bold',
                       fontSize: 14,
-                      color: '#c7c7c7',
-                    }}>
-                    내용없음
+                    }}
+                    isCheck={reservationData?.isCheck}>
+                    {reservationData?.isCheck ? '체크인' : '체크인 전'}
                   </CheckText>
                 </CheckIn>
               </MiddleSectionItem>
+              <View style={{gap: 0}}>
+                <MiddleSectionItem>
+                  <Text
+                    style={{fontWeight: 'bold', fontSize: 14, paddingTop: 4}}>
+                    코스 정보
+                  </Text>
+                  <MiddleText
+                    style={{fontWeight: 'medium', fontSize: 14, paddingTop: 4}}>
+                    {reservationData?.course_info}
+                  </MiddleText>
+                  <CheckIn style={{opacity: 0}}>
+                    <CheckText
+                      style={{
+                        fontWeight: 'medium',
+                        fontSize: 14,
+                        color: '#c7c7c7',
+                      }}>
+                      내용없음
+                    </CheckText>
+                  </CheckIn>
+                </MiddleSectionItem>
+                {reservationData?.isCheck ? (
+                  <MiddleSectionItem>
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        fontSize: 14,
+                        paddingTop: 0,
+                      }}>
+                      락커 정보
+                    </Text>
+                    <MiddleText
+                      style={{
+                        fontWeight: 'medium',
+                        fontSize: 14,
+                        paddingTop: 0,
+                      }}>
+                      {reservationInfo?.locker_info}
+                    </MiddleText>
+                    <CheckIn style={{opacity: 0}}>
+                      <CheckText
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: 14,
+                          color: '#c7c7c7',
+                        }}>
+                        내용없음
+                      </CheckText>
+                    </CheckIn>
+                  </MiddleSectionItem>
+                ) : null}
+              </View>
+            </InnerContainer>
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignContent: 'center',
+              }}>
+              <Text>예정 된 라운딩이 없습니다.</Text>
+              <Text>라운딩 예약 하시겠습니까?</Text>
             </View>
-          </InnerContainer>
+          )}
         </MiddleSectionInner>
         <MiddleSectionInnerMock
           style={{

@@ -78,7 +78,7 @@ const HomeScreen: React.FC = () => {
   /////////////////////////
 
   return (
-    <MainView nestedScrollEnabled={true}>
+    <MainView>
       <TopSection>
         <MockupImg />
         <Text style={{fontWeight: 'bold', fontSize: 20}}>
@@ -93,7 +93,7 @@ const HomeScreen: React.FC = () => {
 
 export default HomeScreen;
 
-const MainView = styled(ScrollView)`
+const MainView = styled(View)`
   padding: 0px 16px;
   flex: 1;
   background-color: #f2f4f6;

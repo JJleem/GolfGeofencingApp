@@ -1,6 +1,10 @@
 import {atom} from 'recoil';
 
-import {LocationInfo, ReservationInfo} from '../interface/interface';
+import {
+  LocationInfo,
+  ReservationInfo,
+  UserReservationType,
+} from '../interface/interface';
 const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식
 
 export const locationState = atom<LocationInfo | null>({
@@ -21,4 +25,9 @@ export const ModalCalendar = atom({
 export const DateSelected = atom({
   key: 'selectedDate',
   default: today,
+});
+
+export const userReservation = atom<UserReservationType | null>({
+  key: 'userReservation',
+  default: null,
 });
