@@ -36,24 +36,22 @@ export default function Carousel({pages, pageWidth, gap, offset}: ICarousel) {
   };
 
   return (
-    <Container>
-      <FlatListStyle
-        automaticallyAdjustContentInsets={false}
-        contentContainerStyle={{
-          paddingHorizontal: offset + gap / 2,
-        }}
-        data={pages}
-        decelerationRate="fast"
-        horizontal
-        keyExtractor={(item: any) => `page__${item.color}`}
-        onScroll={onScroll}
-        pagingEnabled
-        renderItem={renderItem}
-        snapToInterval={pageWidth + gap} // 페이지 너비 + 간격으로 스냅
-        snapToAlignment="start" // 시작 위치에 스냅
-        showsHorizontalScrollIndicator={false}
-        bounces={false} // 스크롤 바운스 비활성화
-      />
-    </Container>
+    <FlatListStyle
+      automaticallyAdjustContentInsets={false}
+      contentContainerStyle={{
+        paddingHorizontal: offset + gap / 2,
+      }}
+      data={pages}
+      decelerationRate="fast"
+      horizontal
+      keyExtractor={(item: any) => `page__${item.color}`}
+      onScroll={onScroll}
+      pagingEnabled
+      renderItem={renderItem}
+      snapToInterval={pageWidth + gap} // 페이지 너비 + 간격으로 스냅
+      snapToAlignment="start" // 시작 위치에 스냅
+      showsHorizontalScrollIndicator={false}
+      bounces={false} // 스크롤 바운스 비활성화
+    />
   );
 }

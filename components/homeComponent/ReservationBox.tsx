@@ -108,9 +108,9 @@ const ReservationBox = () => {
               />
             </TouchableWithoutFeedback>
           </View>
-          <SliderContainer>
+          {/* <SliderContainer>
             <HomeSlider />
-          </SliderContainer>
+          </SliderContainer> */}
           <ReservationBTN
             activeOpacity={0.1}
             onPress={() => navigate('/reservation')}>

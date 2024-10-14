@@ -32,7 +32,7 @@ export interface LocationInfo {
   provider: string;
   time: string;
   requestId: string;
-  isCheck: boolean; // timestamp가 숫자형
+  isCheck?: boolean | null; // timestamp가 숫자형
 }
 export interface LocationData {
   latitude: number;
@@ -44,14 +44,14 @@ export interface LocationData {
   provider: string;
   time: number; // timestamp가 숫자형
   requestId: string;
-  isCheck: boolean;
+  isCheck?: boolean | null;
 }
 export interface ReservationInfo {
   reservationNum?: number;
   date?: string;
   course_info?: string[];
   locker_info?: number;
-  isCheck?: boolean;
+  isCheck?: boolean | null;
   requestId?: string;
   tee_info?: string[];
 }

@@ -32,12 +32,8 @@ const CheckPage = () => {
         <CheckInnerView>
           <CheckTextView>
             <CheckText>
-              {/* {data?.isCheck === 'in'
-              ? '체크인'
-              : data?.isCheck === 'out'
-              ? '체크아웃'
-              : ''}{' '} */}
-              체크인 이 완료되었습니다!
+              {data?.isCheck ? '체크인' : !data?.isCheck ? '체크아웃' : ''} 이
+              완료되었습니다!
             </CheckText>
           </CheckTextView>
           <Text style={{fontSize: 18}}>예약 상품 정보</Text>

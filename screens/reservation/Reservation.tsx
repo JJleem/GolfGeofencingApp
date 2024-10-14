@@ -59,7 +59,7 @@ const Reservation = () => {
       memberNum: memberNum,
     });
   };
-  console.log(selectedTime);
+
   return (
     <MainView>
       <TitleHeader>

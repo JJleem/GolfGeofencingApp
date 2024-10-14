@@ -73,7 +73,7 @@ const HomeScreen: React.FC = () => {
       locationListener.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [locationInfo]);
 
   /////////////////////////
 
@@ -85,7 +85,7 @@ const HomeScreen: React.FC = () => {
           안녕하세요, 김규리님.
         </Text>
       </TopSection>
-      <ScheduleBox />
+      <ScheduleBox isCheck={locationInfo?.isCheck} />
       <ReservationBox />
     </MainView>
   );

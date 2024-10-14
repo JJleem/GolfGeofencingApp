@@ -19,18 +19,15 @@ type isCheck = {
   isCheck?: boolean;
 };
 
-const ScheduleBox = () => {
+const ScheduleBox = ({isCheck}: any) => {
   const [reservationInfo, setReservationInfo] =
     useRecoilState(reservationInfoState);
   const [reservationData, setReservationData] = useRecoilState(userReservation);
 
   console.log(reservationData);
-  const [isCheck, setIsCheck] = useState(
-    mockupdata.reservationInformation.isCheck,
-  );
+
   useEffect(() => {
     setReservationInfo(mockupdata.reservationInformation);
-    setIsCheck(mockupdata.reservationInformation.isCheck);
   }, [setReservationInfo]);
 
   const navigate = useNavigate();
@@ -75,8 +72,8 @@ const ScheduleBox = () => {
                       fontWeight: 'bold',
                       fontSize: 14,
                     }}
-                    isCheck={reservationData?.isCheck}>
-                    {reservationData?.isCheck ? '체크인' : '체크인 전'}
+                    isCheck={isCheck}>
+                    {isCheck ? '체크인' : '체크인 전'}
                   </CheckText>
                 </CheckIn>
               </MiddleSectionItem>
@@ -101,7 +98,7 @@ const ScheduleBox = () => {
                     </CheckText>
                   </CheckIn>
                 </MiddleSectionItem>
-                {reservationData?.isCheck ? (
+                {isCheck ? (
                   <MiddleSectionItem>
                     <Text
                       style={{
