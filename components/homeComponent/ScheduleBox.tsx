@@ -13,11 +13,17 @@ import {useNavigate} from 'react-router-native';
 import {useRecoilState} from 'recoil';
 import {reservationInfoState, userReservation} from '../../atom/atom';
 import mockupdata from '../../mock/mockupdata.json';
-import {ReservationBTN} from '../../screens/reservation/Reservation';
-
-type isCheck = {
-  isCheck?: boolean;
-};
+import {
+  CheckIn,
+  CheckText,
+  InnerContainer,
+  MiddleSection,
+  MiddleSectionContainer,
+  MiddleSectionInner,
+  MiddleSectionInnerMock,
+  MiddleSectionItem,
+  MiddleText,
+} from './HomeScreenStyle';
 
 const ScheduleBox = ({isCheck}: any) => {
   const [reservationInfo, setReservationInfo] =
@@ -31,9 +37,6 @@ const ScheduleBox = ({isCheck}: any) => {
   }, [setReservationInfo]);
 
   const navigate = useNavigate();
-  const goDetails = () => {
-    navigate('/details');
-  };
 
   return (
     <MiddleSection>
@@ -176,62 +179,3 @@ const ScheduleBox = ({isCheck}: any) => {
 };
 
 export default ScheduleBox;
-
-const MiddleSectionContainer = styled(View)`
-  position: relative;
-  width: 100%;
-  height: 205px;
-  margin-bottom: 41px;
-`;
-const MiddleSection = styled(View)`
-  gap: 14px;
-`;
-
-const MiddleSectionItem = styled(View)`
-  flex-direction: row;
-
-  justify-content: space-around;
-  align-items: end;
-`;
-const MiddleSectionInner = styled(Pressable)`
-  position: absolute;
-  gap: 11px;
-  justify-content: space-around;
-  padding: 15px 26px;
-  border-radius: 20px;
-  background-color: #fff;
-  width: 100%;
-  height: 137px;
-`;
-const MiddleSectionInnerMock = styled(View)`
-  position: absolute;
-  gap: 11px;
-  justify-content: space-around;
-  padding: 15px 26px;
-  border-radius: 20px;
-  background-color: #fff;
-  width: 100%;
-  height: 137px;
-`;
-
-const CheckIn = styled(View)<isCheck>`
-  border-radius: 35px;
-  justify-content: center;
-  align-items: center;
-`;
-const CheckText = styled(Text)<isCheck>`
-  border: 1px solid ${({isCheck}) => (isCheck ? '#28a745' : '#c7c7c7')};
-  padding: 4px 0px;
-  width: 75px;
-  text-align: center;
-  border-radius: 35px;
-  color: ${({isCheck}) => (isCheck ? '#28a745' : '#c7c7c7')};
-`;
-const MiddleText = styled(Text)`
-  width: 150px;
-`;
-
-const InnerContainer = styled(View)`
-  width: 100%;
-  flex: 1;
-`;

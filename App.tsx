@@ -37,7 +37,7 @@ import {RecoilRoot} from 'recoil';
 import DetailsHome from './screens/details/DetailsHome';
 import CheckPage from './screens/check/CheckPage';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Facilities from './facilities/Facilities';
+import Facilities from './screens/facilities/Facilities';
 import MyAccount from './screens/account/MyAccount';
 import styled from 'styled-components/native';
 import BottomBanner from './components/BottomBanner';

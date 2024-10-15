@@ -20,6 +20,11 @@ import {locationState} from '../../atom/atom';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ScheduleBox from '../../components/homeComponent/ScheduleBox';
 import ReservationBox from '../../components/homeComponent/ReservationBox';
+import {
+  MainView,
+  MockupImg,
+  TopSection,
+} from '../../components/homeComponent/HomeScreenStyle';
 
 const HomeScreen: React.FC = () => {
   const [locationInfo, setLocationInfo] = useRecoilState(locationState);
@@ -62,7 +67,6 @@ const HomeScreen: React.FC = () => {
             requestId,
             isCheck,
           });
-          console.log(locationInfo);
         } catch (error) {
           console.error('위치 정보 파싱 오류:', error);
         }
@@ -76,6 +80,10 @@ const HomeScreen: React.FC = () => {
   }, [locationInfo]);
 
   /////////////////////////
+  useEffect(() => {
+    // locationInfo가 변경될 때마다 실행됨
+    console.log(locationInfo);
+  }, [locationInfo]); // locationInfo가 변경될 때마다 콘솔 출력
 
   return (
     <MainView>
@@ -92,19 +100,3 @@ const HomeScreen: React.FC = () => {
 };
 
 export default HomeScreen;
-
-const MainView = styled(View)`
-  padding: 0px 16px;
-  flex: 1;
-  background-color: #f2f4f6;
-`;
-const TopSection = styled(View)`
-  margin-top: 44px;
-  gap: 8px;
-  margin-bottom: 41px;
-`;
-const MockupImg = styled(View)`
-  width: 163px;
-  height: 29px;
-  background-color: #f00;
-`;

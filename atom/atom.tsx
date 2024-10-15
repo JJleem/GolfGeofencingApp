@@ -26,7 +26,18 @@ export const DateSelected = atom({
   key: 'selectedDate',
   default: today,
 });
-
+export const SelectTime = atom({
+  key: 'SelectTeeTime',
+  default: '',
+});
+export const SelectCourse = atom({
+  key: 'selectCourse',
+  default: '',
+});
+export const SelectMemeberNum = atom({
+  key: 'selectMemberNum',
+  default: 0,
+});
 export const userReservation = atom<UserReservationType | null>({
   key: 'userReservation',
   default: null,

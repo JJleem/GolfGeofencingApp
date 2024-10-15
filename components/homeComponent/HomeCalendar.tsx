@@ -6,6 +6,7 @@ import {useRecoilState} from 'recoil';
 import styled from 'styled-components/native';
 import {DateSelected, ModalCalendar} from '../../atom/atom';
 import Day from 'react-native-calendars/src/calendar/day';
+import {CalendarView} from './HomeScreenStyle';
 
 LocaleConfig.locales['ko'] = {
   monthNames: [
@@ -46,7 +47,13 @@ LocaleConfig.defaultLocale = 'ko';
 const HomeCalendar = () => {
   const [isClick, setIsClick] = useRecoilState(ModalCalendar);
   const [selectedDate, setSelectedDate] = useRecoilState(DateSelected);
-
+  const markedDates = {
+    [selectedDate]: {
+      selected: true,
+      marked: true,
+      selectedColor: 'skyblue', // 선택된 날짜의 색상
+    },
+  };
   return (
     <>
       <CalendarView>
@@ -60,6 +67,7 @@ const HomeCalendar = () => {
           monthFormat={'yyyy MM'}
           hideExtraDays={true}
           firstDay={1}
+          markedDates={markedDates}
         />
       </CalendarView>
     </>
@@ -67,7 +75,3 @@ const HomeCalendar = () => {
 };
 
 export default HomeCalendar;
-const CalendarView = styled(View)`
-  width: 80%;
-  justify-content: center;
-`;
