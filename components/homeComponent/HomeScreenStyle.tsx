@@ -1,4 +1,4 @@
-import {Pressable, TouchableOpacity, View} from 'react-native';
+import {Pressable, ScrollView, TouchableOpacity, View} from 'react-native';
 import styled from 'styled-components/native';
 import {Text} from '../../theme/theme';
 
@@ -61,7 +61,7 @@ export const ReservationBTN = styled(TouchableOpacity)`
 
 export const SliderContainer = styled(Pressable)`
   width: 100%;
-  height: 45px;
+
   justify-content: center;
   align-items: center;
 `;
@@ -105,7 +105,7 @@ export const InnerContainer = styled(View)`
   width: 100%;
   flex: 1;
 `;
-export const MainView = styled(View)`
+export const MainView = styled(ScrollView)`
   padding: 0px 16px;
   flex: 1;
   background-color: #f2f4f6;

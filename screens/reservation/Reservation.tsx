@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Modal} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Alert, Modal} from 'react-native';
 import {Text} from '../../theme/theme';
 
 import {useRecoilState} from 'recoil';
@@ -8,11 +8,12 @@ import {
   SelectCourse,
   SelectMemeberNum,
   SelectTime,
+  UserDetail,
   userReservation,
 } from '../../atom/atom';
 
 import {useNavigate} from 'react-router-native';
-import {UserReservationType} from '../../interface/interface';
+import {UserDetailType, UserReservationType} from '../../interface/interface';
 import ReservationDate from '../../components/reservationComponent/ReservationDate';
 import ReservationTeeTime from '../../components/reservationComponent/ReservationTeeTime';
 import ReservationCourse from '../../components/reservationComponent/ReservationCourse';
@@ -26,6 +27,8 @@ import {
   SectionView,
   TitleHeader,
 } from '../../components/reservationComponent/ReservationStyle';
+import axios from 'axios';
+
 const Reservation = () => {
   const [selectedTime, setSelectedTime] = useRecoilState(SelectTime);
   const [selectedDate, setSelectedDate] = useRecoilState(DateSelected);
@@ -34,22 +37,76 @@ const Reservation = () => {
   const [isClick, setIsClick] = useState(false);
   const [selectCourse, setSelectCourse] = useRecoilState(SelectCourse);
   const navigate = useNavigate();
+  const [userDetail, setUserDetail] = useRecoilState<UserDetailType | null>(
+    UserDetail,
+  );
+  const [isReservationComplete, setIsReservationComplete] = useState(false);
+  console.log('예약내역', reservationData);
 
-  console.log(reservationData);
-
-  const handleReservationArray = ({
+  const handleReservationArray = async ({
     date,
     course_info,
     tee_info,
-    memberNum,
+    persons,
+    memberId,
   }: UserReservationType) => {
     setIsClick(!isClick);
     setReservationData({
+      memberId: memberId,
       date: date,
       course_info: course_info,
       tee_info: tee_info,
-      memberNum: memberNum,
+      persons: persons, //person
     });
+    await postData(memberId, date, course_info, tee_info, persons);
+    setIsReservationComplete(true);
+  };
+  ///예약완료후 예약창 초기화
+  const completeData = () => {
+    resetData();
+    navigate('/');
+  };
+
+  const resetData = () => {
+    setSelectCourse('');
+    setMemberNum(0);
+    setSelectedTime('');
+  };
+  ///
+  const postData = async (
+    memberId?: string,
+    date?: string,
+    course_info?: string,
+    tee_info?: string,
+    persons?: number,
+  ) => {
+    try {
+      const response = await axios.post(
+        // 에뮬레이터 IP
+        'http://10.0.2.2:8080/api/reservations',
+        // local IP
+        //'http://192.168.0.68:8080/api/reservations',
+
+        {
+          memberId,
+          date,
+          course_info,
+          tee_info,
+          persons,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json', // JSON 형식으로 전송
+          },
+        },
+      );
+      console.log(response.data); // 서버의 응답 데이터
+      return true;
+    } catch (error) {
+      Alert.alert('오류', '예약 전송에 실패했습니다.');
+      console.error(error);
+      return false;
+    }
   };
 
   return (
@@ -69,8 +126,8 @@ const Reservation = () => {
               date: selectedDate,
               course_info: selectCourse,
               tee_info: selectedTime,
-              memberNum: memberNum,
-              isCheck: false,
+              persons: memberNum,
+              memberId: userDetail?.id,
             })
           }>
           <Text style={{fontWeight: 'bold', fontSize: 14, color: '#fff'}}>
@@ -109,9 +166,7 @@ const Reservation = () => {
                   </Text>
                   <Text>코스명 : {selectCourse}</Text>
                   <Text>예약이 완료되었습니다.</Text>
-                  <ReservationBTN
-                    activeOpacity={0.1}
-                    onPress={() => navigate('/')}>
+                  <ReservationBTN activeOpacity={0.1} onPress={completeData}>
                     <Text
                       style={{fontWeight: 'bold', fontSize: 14, color: '#fff'}}>
                       확인

@@ -11,7 +11,11 @@ import styled from 'styled-components/native';
 import {Text} from '../../theme/theme';
 import {useNavigate} from 'react-router-native';
 import {useRecoilState} from 'recoil';
-import {reservationInfoState, userReservation} from '../../atom/atom';
+import {
+  GetReservationInfo,
+  reservationInfoState,
+  userReservation,
+} from '../../atom/atom';
 import mockupdata from '../../mock/mockupdata.json';
 import {
   CheckIn,
@@ -24,17 +28,44 @@ import {
   MiddleSectionItem,
   MiddleText,
 } from './HomeScreenStyle';
+import axios from 'axios';
+import {
+  GetReservationResponse,
+  GetReservationType,
+} from '../../interface/interface';
 
 const ScheduleBox = ({isCheck}: any) => {
-  const [reservationInfo, setReservationInfo] =
-    useRecoilState(reservationInfoState);
-  const [reservationData, setReservationData] = useRecoilState(userReservation);
+  const [getReservationInfo, setGetReservationInfo] =
+    useRecoilState(GetReservationInfo);
 
-  console.log(reservationData);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setReservationInfo(mockupdata.reservationInformation);
-  }, [setReservationInfo]);
+    const fetchGetReservation = async () => {
+      try {
+        const response = await axios.get<GetReservationResponse>(
+          // 에뮬레이터 IP
+          'http://10.0.2.2:8080/api/reservations/kim01',
+          // local IP
+          // 'http://192.168.0.68:8080/api/reservations/kim01',
+        );
+        console.log('response', response.data);
+        const lastReservation = response.data[response.data.length - 1];
+        setGetReservationInfo(lastReservation);
+      } catch (error) {
+        setError((error as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGetReservation();
+  }, [setGetReservationInfo]);
+
+  console.log('getData', getReservationInfo);
+
+  const [reservationData, setReservationData] = useRecoilState(userReservation);
 
   const navigate = useNavigate();
 
@@ -53,9 +84,9 @@ const ScheduleBox = ({isCheck}: any) => {
             zIndex: 3,
           }}
           onPress={() => navigate('/details')}>
-          {reservationData?.course_info &&
-          reservationData?.memberNum &&
-          reservationData?.date ? (
+          {getReservationInfo?.course_info &&
+          getReservationInfo?.persons &&
+          getReservationInfo?.date ? (
             <InnerContainer>
               <MiddleSectionItem>
                 <Text style={{fontWeight: 'bold', fontSize: 14, paddingTop: 4}}>
@@ -67,7 +98,7 @@ const ScheduleBox = ({isCheck}: any) => {
                     fontSize: 14,
                     paddingTop: 4,
                   }}>
-                  {reservationData?.date}
+                  {getReservationInfo?.date}
                 </MiddleText>
                 <CheckIn isCheck={reservationData?.isCheck}>
                   <CheckText
@@ -88,7 +119,7 @@ const ScheduleBox = ({isCheck}: any) => {
                   </Text>
                   <MiddleText
                     style={{fontWeight: 'medium', fontSize: 14, paddingTop: 4}}>
-                    {reservationData?.course_info}
+                    {getReservationInfo?.course_info}
                   </MiddleText>
                   <CheckIn style={{opacity: 0}}>
                     <CheckText
@@ -101,23 +132,25 @@ const ScheduleBox = ({isCheck}: any) => {
                     </CheckText>
                   </CheckIn>
                 </MiddleSectionItem>
-                {isCheck ? (
-                  <MiddleSectionItem>
-                    <Text
-                      style={{
-                        fontWeight: 'bold',
-                        fontSize: 14,
-                        paddingTop: 0,
-                      }}>
-                      락커 정보
-                    </Text>
+
+                <MiddleSectionItem>
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: 14,
+                      paddingTop: 0,
+                    }}>
+                    락커 정보
+                  </Text>
+
+                  <>
                     <MiddleText
                       style={{
                         fontWeight: 'medium',
                         fontSize: 14,
                         paddingTop: 0,
                       }}>
-                      {reservationInfo?.locker_info}
+                      {isCheck ? getReservationInfo?.locker_info : '미배정'}
                     </MiddleText>
                     <CheckIn style={{opacity: 0}}>
                       <CheckText
@@ -129,8 +162,8 @@ const ScheduleBox = ({isCheck}: any) => {
                         내용없음
                       </CheckText>
                     </CheckIn>
-                  </MiddleSectionItem>
-                ) : null}
+                  </>
+                </MiddleSectionItem>
               </View>
             </InnerContainer>
           ) : (

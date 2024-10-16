@@ -6,39 +6,39 @@ const screenWidth = Math.round(Dimensions.get('window').width);
 const PAGES = [
   {
     num: 1,
-    color: '#86E3CE',
+    color: '#6b6b6b',
   },
   {
     num: 2,
-    color: '#D0E6A5',
+    color: '#6b6b6b',
   },
   {
     num: 3,
-    color: '#FFDD94',
+    color: '#6b6b6b',
   },
   {
     num: 4,
-    color: '#FA897B',
+    color: '#6b6b6b',
   },
   {
     num: 5,
-    color: '#CCABD8',
+    color: '#6b6b6b',
   },
   {
     num: 6,
-    color: '#a2ABD8',
+    color: '#6b6b6b',
   },
   {
     num: 7,
-    color: '#f00',
+    color: '#6b6b6b',
   },
   {
     num: 8,
-    color: '#ff0',
+    color: '#6b6b6b',
   },
   {
     num: 9,
-    color: '#0ff',
+    color: '#6b6b6b',
   },
   {
     num: 10,

@@ -14,9 +14,9 @@ import {
 } from 'react-native';
 import {Text} from '../../theme/theme';
 import styled from 'styled-components/native';
-import {LocationData} from '../../interface/interface';
+import {LocationData, UserDetailType} from '../../interface/interface';
 import {useRecoilState} from 'recoil';
-import {locationState} from '../../atom/atom';
+import {locationState, UserDetail} from '../../atom/atom';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ScheduleBox from '../../components/homeComponent/ScheduleBox';
 import ReservationBox from '../../components/homeComponent/ReservationBox';
@@ -25,8 +25,36 @@ import {
   MockupImg,
   TopSection,
 } from '../../components/homeComponent/HomeScreenStyle';
+import axios from 'axios';
 
 const HomeScreen: React.FC = () => {
+  const [userDetail, setUserDetail] = useRecoilState<UserDetailType | null>(
+    UserDetail,
+  );
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserDetail = async () => {
+      try {
+        const response = await axios.get<UserDetailType>(
+          // 에뮬레이터 IP
+          'http://10.0.2.2:8080/api/user/detail/1',
+          // local IP
+          // 'http://192.168.0.68:8080/api/user/detail/1',
+        );
+        setUserDetail(response.data);
+      } catch (error) {
+        setError((error as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserDetail();
+  }, [setUserDetail]);
+
+  console.log('userDetail', userDetail);
+
   const [locationInfo, setLocationInfo] = useRecoilState(locationState);
 
   useEffect(() => {
@@ -90,7 +118,7 @@ const HomeScreen: React.FC = () => {
       <TopSection>
         <MockupImg />
         <Text style={{fontWeight: 'bold', fontSize: 20}}>
-          안녕하세요, 김규리님.
+          안녕하세요, {userDetail?.name}님.
         </Text>
       </TopSection>
       <ScheduleBox isCheck={locationInfo?.isCheck} />

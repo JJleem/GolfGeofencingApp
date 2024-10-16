@@ -1,9 +1,22 @@
 import React from 'react';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {Pressable, ScrollView, TouchableOpacity, View} from 'react-native';
 import styled from 'styled-components/native';
 import {Text} from '../../theme/theme';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {useRecoilState} from 'recoil';
+import {UserDetail} from '../../atom/atom';
+import {useNavigate} from 'react-router-native';
 const MyAccount = () => {
+  const [userDetail, setUserDetail] = useRecoilState(UserDetail);
+  const formatBirthdate = (birthdate: string): string => {
+    const date = new Date(birthdate);
+    const year = date.getFullYear().toString().slice(-2); // "89"
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // "12"
+    const day = String(date.getDate()).padStart(2, '0'); // "31"
+
+    return `${year}-${month}-${day}`; // "89-12-31"
+  };
+  const navigate = useNavigate();
   return (
     <MainView>
       <TitleHeader>
@@ -23,7 +36,7 @@ const MyAccount = () => {
             <SectionItemComp>
               <Text
                 style={{fontWeight: 'medium', fontSize: 16, color: '#7d7d7d'}}>
-                김철수
+                {userDetail?.name}
               </Text>
               <TouchableOpacity>
                 <Icon name="settings" size={24} color="#7d7d7d" />
@@ -35,7 +48,7 @@ const MyAccount = () => {
             <SectionItemComp>
               <Text
                 style={{fontWeight: 'medium', fontSize: 16, color: '#7d7d7d'}}>
-                Cheol123
+                {userDetail?.id}
               </Text>
               <TouchableOpacity>
                 <Icon name="settings" size={24} color="#7d7d7d" />
@@ -49,7 +62,8 @@ const MyAccount = () => {
             <SectionItemComp>
               <Text
                 style={{fontWeight: 'medium', fontSize: 16, color: '#7d7d7d'}}>
-                90.01.01 (남성)
+                {formatBirthdate(userDetail?.birthdate || '89-12-31')}(
+                {userDetail?.gender})
               </Text>
               <TouchableOpacity>
                 <Icon name="settings" size={24} color="#7d7d7d" />
@@ -61,7 +75,7 @@ const MyAccount = () => {
             <SectionItemComp>
               <Text
                 style={{fontWeight: 'medium', fontSize: 16, color: '#7d7d7d'}}>
-                010-5678-1234
+                {userDetail?.phone}
               </Text>
               <TouchableOpacity>
                 <Icon name="settings" size={24} color="#7d7d7d" />
@@ -107,18 +121,22 @@ const MyAccount = () => {
             elevation: 5, // 0 이상의 값으로 수정
             marginBottom: 101,
           }}>
-          <SectionItemInner>
+          <SectionItemInnerTouch onPress={() => navigate('/details')}>
             <View style={{gap: 8}}>
               <Text style={{fontWeight: 'bold', fontSize: 16}}>
                 예약 내역 확인하기
               </Text>
             </View>
             <SectionItemComp>
-              <TouchableOpacity>
-                <Icon name="settings" size={24} color="#7d7d7d" />
+              <TouchableOpacity onPress={() => navigate('/details')}>
+                <Icon
+                  name="chevron-forward-outline"
+                  size={24}
+                  color="#7d7d7d"
+                />
               </TouchableOpacity>
             </SectionItemComp>
-          </SectionItemInner>
+          </SectionItemInnerTouch>
         </SectionItemBox>
       </SectionView>
     </MainView>
@@ -156,6 +174,11 @@ const SectionItemBox = styled(View)`
   gap: 40px;
 `;
 const SectionItemInner = styled(View)`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+const SectionItemInnerTouch = styled(TouchableOpacity)`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;

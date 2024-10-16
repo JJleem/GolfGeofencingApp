@@ -1,11 +1,23 @@
 import {atom} from 'recoil';
 
 import {
+  GetReservationType,
   LocationInfo,
   ReservationInfo,
+  UserDetailType,
   UserReservationType,
 } from '../interface/interface';
 const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식
+
+export const GetReservationInfo = atom<GetReservationType | null>({
+  key: 'getReservationInfo',
+  default: null,
+});
+
+export const UserDetail = atom<UserDetailType | null>({
+  key: 'userDetails',
+  default: null,
+});
 
 export const locationState = atom<LocationInfo | null>({
   key: 'locationState',

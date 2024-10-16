@@ -72,6 +72,29 @@ export interface UserReservationType {
   date?: string;
   course_info?: string;
   tee_info?: string;
-  memberNum?: number;
+  persons?: number;
   isCheck?: boolean;
+  memberId?: string;
 }
+
+export interface UserDetailType {
+  memberNum?: number;
+  id?: string;
+  pwd?: string;
+  name?: string;
+  birthdate?: string;
+  phone?: string;
+  gender?: string;
+}
+export interface GetReservationType {
+  reservation_num: number;
+  course_info: string;
+  date: string;
+  locker_info: number;
+  persons: number;
+  tee_info: string;
+  member_id: string;
+  requestId: string;
+}
+
+export type GetReservationResponse = GetReservationType[];

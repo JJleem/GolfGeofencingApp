@@ -11,19 +11,20 @@ import {
 } from '../../components/reservationComponent/ReservationStyle';
 import styled from 'styled-components/native';
 import {useRecoilState} from 'recoil';
-import {userReservation} from '../../atom/atom';
+import {GetReservationInfo, userReservation} from '../../atom/atom';
 
 const DetailsHome = () => {
-  const [reservationData, setReservationData] = useRecoilState(userReservation);
+  const [getReservationInfo, setGetReservationInfo] =
+    useRecoilState(GetReservationInfo);
   const navigate = useNavigate();
-  console.log(reservationData);
+  console.log('get', getReservationInfo);
   return (
     <MainView style={{paddingBottom: 120, paddingTop: 34}}>
       <TitleHeader>
         <Text style={{fontWeight: 'bold', fontSize: 20}}>라운딩 예약하기</Text>
       </TitleHeader>
       <SectionView>
-        {reservationData === null ? (
+        {getReservationInfo === null || getReservationInfo === undefined ? (
           <SectionItemBox
             style={{
               width: '100%',
@@ -53,9 +54,18 @@ const DetailsHome = () => {
             </ReservationView>
           </SectionItemBox>
         ) : (
-          <View>
-            <Text>hi</Text>
-          </View>
+          <SectionItemBox
+            style={{
+              width: '100%',
+              height: '80%',
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 0},
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+              elevation: 5,
+            }}>
+            <ReservationView></ReservationView>
+          </SectionItemBox>
         )}
       </SectionView>
     </MainView>
@@ -75,7 +85,6 @@ const ReservationView = styled(View)`
 const ReservationInnerView = styled(View)`
   width: 100%;
   height: 80%;
-
   justify-content: center;
   align-items: center;
 `;

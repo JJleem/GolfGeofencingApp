@@ -35,7 +35,7 @@ const ReservationBox = () => {
   const [isClick, setIsClick] = useRecoilState(ModalCalendar);
   const [selectedDate, setSelectedDate] = useRecoilState(DateSelected);
   return (
-    <MiddleSection style={{paddingBottom: 100}}>
+    <MiddleSection style={{paddingBottom: 500}}>
       <Text style={{fontWeight: 'bold', fontSize: 16}}>라운딩 예약하기</Text>
       <MiddleSectionContainer>
         <MiddleSectionInner
@@ -46,7 +46,7 @@ const ReservationBox = () => {
             shadowRadius: 20,
             elevation: 5, // 0 이상의 값으로 수정
             top: '0%', // 부모의 50% 위치
-            height: 189,
+            height: 500,
           }}>
           <View
             style={{
@@ -57,7 +57,7 @@ const ReservationBox = () => {
             <Text style={{fontWeight: 'bold', fontSize: 16}}>
               {selectedDate}
             </Text>
-            <TouchableWithoutFeedback
+            {/* <TouchableWithoutFeedback
               style={{
                 justifyContent: 'center',
                 alignContent: 'center',
@@ -68,10 +68,10 @@ const ReservationBox = () => {
                 size={20}
                 color="#1e1e1e"
               />
-            </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback> */}
           </View>
           <SliderContainer>
-            <HomeSlider />
+            <HomeCalendar />
           </SliderContainer>
           <ReservationBTN
             activeOpacity={0.1}
@@ -81,33 +81,6 @@ const ReservationBox = () => {
             </Text>
           </ReservationBTN>
         </MiddleSectionInner>
-        <Modal
-          transparent={true}
-          visible={isClick}
-          animationType="slide"
-          onRequestClose={() => {
-            setIsClick(false);
-          }}>
-          <ModalCenterView onPress={() => setIsClick(false)}>
-            <ModalView
-              onTouchStart={e => {
-                e.stopPropagation(); // 모달 내부 클릭 시 이벤트 전파 방지
-              }}
-              style={{
-                zIndex: 2,
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 4,
-                elevation: 5,
-              }}>
-              <HomeCalendar />
-            </ModalView>
-          </ModalCenterView>
-        </Modal>
       </MiddleSectionContainer>
     </MiddleSection>
   );
